@@ -1,7 +1,8 @@
 import streamlit as st
 import json
 from logic.scoring import calculate_phq9
-
+from logic.scoring import calculate_phq9
+from logic.database import init_db, save_record  # <-- 新增这一行
 # ==========================================
 # 1. 数据读取层 (Model 接入)
 # ==========================================
@@ -12,6 +13,9 @@ def load_scale_data(filepath="data/scales.json"):
 
 # 加载数据
 scale_db = load_scale_data()
+scale_db = load_scale_data()
+phq9_data = scale_db["PHQ-9"]
+init_db()  # <-- 新增这一行：初始化数据库
 phq9_data = scale_db["PHQ-9"]
 
 # ==========================================
@@ -68,6 +72,11 @@ if submitted:
     try:
         # 将记忆里的分数列表，直接喂给我们在 logic 文件夹写的纯函数
         result = calculate_phq9(st.session_state["answers"])
+        # 将记忆里的分数列表，直接喂给我们在 logic 文件夹写的纯函数
+        result = calculate_phq9(st.session_state["answers"])
+        
+        # 默默存入数据库（新加的这一行）
+        save_record(st.session_state["answers"], result["total_score"], result["severity"])
         
         # 展示成果
         st.success("✅ 问卷提交成功！")
