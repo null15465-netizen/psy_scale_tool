@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>抑郁自评量表 (SDS) - Clinical Assessment</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&amp;family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&amp;family=Source+Sans+3:ital,wght@0,200..900;1,200..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration (Academic Warmth Style Guidance) -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#ffb781",
+                        "surface-bright": "#fefae0",
+                        "surface-tint": "#3f6653",
+                        "surface-container": "#f2efd5",
+                        "outline-variant": "#c1c8c2",
+                        "tertiary-fixed": "#ffdcbb",
+                        "on-secondary-fixed": "#2f1400",
+                        "secondary-container": "#fda055",
+                        "on-surface-variant": "#414844",
+                        "primary": "#012d1d",
+                        "surface-dim": "#dedbc2",
+                        "on-primary-fixed-variant": "#274e3d",
+                        "surface-variant": "#e7e3ca",
+                        "tertiary-container": "#583300",
+                        "tertiary": "#3a2000",
+                        "inverse-on-surface": "#f5f1d8",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#c1ecd4",
+                        "on-error": "#ffffff",
+                        "on-surface": "#1d1c0d",
+                        "on-tertiary-fixed": "#2b1700",
+                        "on-secondary-fixed-variant": "#6f3800",
+                        "on-primary": "#ffffff",
+                        "secondary": "#924c00",
+                        "secondary-fixed": "#ffdcc4",
+                        "on-tertiary-container": "#d59a58",
+                        "tertiary-fixed-dim": "#faba75",
+                        "on-background": "#1d1c0d",
+                        "surface-container-highest": "#e7e3ca",
+                        "background": "#fefae0",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#703800",
+                        "primary-container": "#1b4332",
+                        "on-tertiary-fixed-variant": "#673d00",
+                        "surface": "#fefae0",
+                        "outline": "#717973",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#86af99",
+                        "primary-fixed-dim": "#a5d0b9",
+                        "surface-container-high": "#ede9cf",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#a5d0b9",
+                        "inverse-surface": "#323120",
+                        "surface-container-low": "#f8f4db",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#002114",
+                        "muted-clay": "#C9C4B1" // Adding the requested border color
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-lg": "64px",
+                        "stack-md": "32px",
+                        "margin-mobile": "24px",
+                        "gutter": "32px",
+                        "unit": "8px",
+                        "margin-desktop": "120px"
+                    },
+                    "fontFamily": {
+                        "question-text": ["STZhongsong", "华文中宋", "EB Garamond", "serif"],
+                        "headline-lg": ["STZhongsong", "华文中宋", "EB Garamond", "serif"],
+                        "display-lg": ["STZhongsong", "华文中宋", "EB Garamond", "serif"],
+                        "body-md": ["STZhongsong", "华文中宋", "Literata", "serif"],
+                        "headline-lg-mobile": ["STZhongsong", "华文中宋", "EB Garamond", "serif"],
+                        "body-lg": ["STZhongsong", "华文中宋", "Literata", "serif"],
+                        "label-md": ["Source Sans 3", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "question-text": ["24px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Texture overlay for paper effect */
+        .paper-texture {
+            position: relative;
+        }
+        .paper-texture::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            z-index: 1;
+        }
+        
+        /* Subtle paper shadow */
+        .paper-shadow {
+            box-shadow: 0px 4px 20px rgba(27, 67, 50, 0.05);
+        }
+        
+        /* Custom horizontal rule for clinical report look */
+        .clinical-hr {
+            border: 0;
+            height: 0.5px;
+            background-color: theme('colors.outline-variant');
+            margin: theme('spacing.stack-md') 0;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="bg-surface-dim text-on-surface antialiased min-h-screen flex flex-col paper-texture">
+<!-- TOP APP BAR -->
+<header class="bg-surface dark:bg-surface-dim border-b border-outline-variant/30 dark:border-outline-variant/10 flat no shadows docked full-width top-0 z-40 relative">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-[960px] mx-auto">
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary dark:text-primary-fixed-dim">Clinical Assessment</h1>
+<div class="flex gap-4">
+<button aria-label="Account" class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- MAIN CONTENT CANVAS -->
+<!-- Global Container: Centered max-800px. -->
+<main class="flex-grow w-full max-w-[800px] mx-auto px-margin-mobile md:px-0 py-stack-lg z-10 relative flex flex-col gap-stack-md">
+<!-- TOP INFO BAR -->
+<section class="flex flex-col gap-unit">
+<h2 class="font-display-lg text-display-lg text-primary text-center">抑郁自评量表 (SDS)</h2>
+<div class="bg-surface-container border border-muted-clay rounded p-6 mt-4 paper-shadow text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">请根据过去两周的真实感受作答。</p>
+</div>
+</section>
+<!-- PROGRESS INDICATOR -->
+<section class="flex flex-col gap-2 items-center my-4">
+<span class="font-body-md text-body-md text-on-surface-variant tracking-wide">第 1 部分 / 共 3 部分</span>
+<div class="w-full max-w-[300px] h-1 bg-surface-variant rounded-full overflow-hidden border border-outline-variant/30">
+<div class="h-full bg-primary" style="width: 30%;"></div>
+</div>
+</section>
+<!-- QUESTION CARD -->
+<section class="bg-surface border border-muted-clay rounded-lg p-8 md:p-12 paper-shadow relative">
+<div class="mb-8">
+<h3 class="font-question-text text-question-text text-primary">1. 我觉得闷闷不乐，情绪低沉</h3>
+</div>
+<hr class="clinical-hr"/>
+<div class="w-full h-[60px] border-2 border-dashed border-outline-variant/50 bg-surface-container-low rounded flex items-center justify-center">
+<span class="font-body-md text-body-md text-on-surface-variant/70 italic">[Backend Widget Placeholder]</span>
+</div>
+</section>
+</main>
+<!-- BOTTOM NAV BAR (Contextual Navigation for Assessment Flow) -->
+<!-- Hiding BottomNavBar struct provided in JSON as it's not applicable to the specific layout requested by user (Ghost button + Primary Teal Button for previous/next). Creating custom bottom bar conforming to request while maintaining anchor tokens. -->
+<div class="w-full max-w-[800px] mx-auto px-margin-mobile md:px-0 py-stack-md z-50 relative mt-auto mb-stack-lg">
+<div class="flex justify-between items-center w-full">
+<button class="font-body-md text-body-md text-primary border border-primary/30 bg-transparent hover:bg-surface-variant px-6 py-3 rounded transition-colors flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                上一部分
+            </button>
+<button class="font-label-md text-label-md uppercase tracking-wider bg-primary text-on-primary hover:bg-primary-container px-8 py-3 rounded shadow-sm hover:shadow-md transition-all flex items-center gap-2 hover:-translate-y-0.5 duration-150" type="button">
+                下一部分
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>
