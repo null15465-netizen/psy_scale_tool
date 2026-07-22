@@ -1,53 +1,42 @@
-import sqlite3
+import streamlit as st
+from supabase import create_client, Client
 import json
 from datetime import datetime
 from typing import List
 
-# 定义数据库文件的物理存放位置（生成在根目录下）
-DB_PATH = "psy_records.db"
+# ==========================================
+# 1. 初始化云端数据库连接
+# ==========================================
+@st.cache_resource
+def init_connection() -> Client:
+    """利用 Streamlit 的密码箱安全读取配置，并建立长连接"""
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    return create_client(url, key)
+
+# 获取全局数据库客户端实例
+supabase = init_connection()
 
 def init_db() -> None:
     """
-    初始化数据库：如果表不存在，则自动创建。
+    云端 PostgreSQL 不需要代码自动建表，表结构已在 Supabase 后台手动创建。
+    这里保留空函数，防止 app.py 报错。
     """
-    # 建立连接
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    
-    # 执行 SQL 语句：创建名为 phq9_records 的表
-    # 包含字段：自增ID, 提交时间, 原始答案(存为JSON字符串), 总分, 严重程度
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS phq9_records (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            submit_time TEXT NOT NULL,
-            raw_answers TEXT NOT NULL,
-            total_score INTEGER NOT NULL,
-            severity TEXT NOT NULL
-        )
-    ''')
-    
-    # 提交修改并关闭连接
-    conn.commit()
-    conn.close()
+    pass
 
-def save_record(answers: List[int], total_score: int, severity: str) -> None:
-    """
-    纯副作用函数：将一条答题记录安全插入到数据库中。
-    :param answers: 用户的原始分数列表
-    :param total_score: 计算出的总分
-    :param severity: 临床诊断结果
-    """
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    
+# ==========================================
+# 2. 插入数据记录
+# ==========================================
+def save_record(answers: List[int], total_score: int, severity: str, user_id: str) -> None:
+    """将患者数据通过 API 推送至 Supabase 云端"""
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    answers_json = json.dumps(answers) # 将 Python 列表转成 JSON 字符串才能存入数据库文本字段
+    answers_json = json.dumps(answers)
     
-    # 质量门禁：使用 ? 占位符而不是 f-string 直接拼接，这是防止 SQL 注入攻击的行业铁律
-    cursor.execute('''
-        INSERT INTO phq9_records (submit_time, raw_answers, total_score, severity)
-        VALUES (?, ?, ?, ?)
-    ''', (current_time, answers_json, total_score, severity))
-    
-    conn.commit()
-    conn.close()
+    # 执行插入操作，对应刚才在云端创建的 phq9_records 表
+    data, count = supabase.table('phq9_records').insert({
+        "submit_time": current_time,
+        "raw_answers": answers_json,
+        "total_score": total_score,
+        "severity": severity,
+        "user_id": user_id
+    }).execute()

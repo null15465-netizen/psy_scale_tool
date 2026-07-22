@@ -6,7 +6,7 @@ def calculate_phq9(scores: List[int]) -> Dict[str, Union[int, str]]:
     :param scores: 用户选择的分数列表，必须包含 9 个整数（每个范围 0-3）
     :return: 包含 'total_score' 和 'severity' 的字典
     """
-    # 质量门禁：如果传入的答案不是9个，或者有超纲的分数，直接抛出系统错误
+    # 质量门禁：如果传入的答案不是9个，或者有超纲的分数，抛出系统错误
     if len(scores) != 9:
         raise ValueError(f"PHQ-9 必须包含 9 道题的回答，当前收到 {len(scores)} 题")
     if any(s < 0 or s > 3 for s in scores):
