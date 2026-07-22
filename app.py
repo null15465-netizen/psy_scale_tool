@@ -179,7 +179,7 @@ else:
             st.session_state["user_id"]
         )
         
-        st.success("问卷数据收集完成，您的数据已进入加密安全舱。")
+        st.success("问卷数据收集完成，感谢您的配合！")
         st.metric(label="PHQ-9 评估总分", value=result["total_score"])
         
         severity = result["severity"]
