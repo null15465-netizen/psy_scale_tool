@@ -1,42 +1,40 @@
 import streamlit as st
-from supabase import create_client, Client
-import json
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import List
+from supabase import create_client, Client
 
-# ==========================================
-# 1. 初始化云端数据库连接
-# ==========================================
-@st.cache_resource
-def init_connection() -> Client:
-    """利用 Streamlit 的密码箱安全读取配置，并建立长连接"""
-    url = st.secrets["SUPABASE_URL"]
-    key = st.secrets["SUPABASE_KEY"]
-    return create_client(url, key)
-
-# 获取全局数据库客户端实例
-supabase = init_connection()
+# 读取安全密钥
+url: str = st.secrets["SUPABASE_URL"]
+key: str = st.secrets["SUPABASE_KEY"]
+supabase: Client = create_client(url, key)
 
 def init_db() -> None:
-    """
-    云端 PostgreSQL 不需要代码自动建表，表结构已在 Supabase 后台手动创建。
-    这里保留空函数，防止 app.py 报错。
-    """
     pass
 
-# ==========================================
-# 2. 插入数据记录
-# ==========================================
-def save_record(answers: List[int], total_score: int, severity: str, user_id: str) -> None:
-    """将患者数据通过 API 推送至 Supabase 云端"""
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    answers_json = json.dumps(answers)
+def save_record(answers: List[int], total_score: int, severity: str, user_id: str, scale_name: str) -> None:
+    """
+    将用户的答题记录动态路由写入到对应的 Supabase 云端数据库表中。
+    :param scale_name: 当前量表的标识名（"PHQ-9", "GAD-7", "SCL-90"）
+    """
+    tz_beijing = timezone(timedelta(hours=8))
+    current_time = datetime.now(tz_beijing).strftime("%Y-%m-%d %H:%M:%S")
     
-    # 执行插入操作，对应刚才在云端创建的 phq9_records 表
-    data, count = supabase.table('phq9_records').insert({
+    # 构造标准数据字典
+    data = {
         "submit_time": current_time,
-        "raw_answers": answers_json,
+        "raw_answers": answers,
         "total_score": total_score,
         "severity": severity,
         "user_id": user_id
-    }).execute()
+    }
+    
+    # 动态路由选择对应的数据库表名
+    table_map = {
+        "PHQ-9": "phq9_records",
+        "GAD-7": "gad7_records",
+        "SCL-90": "scl90_records"
+    }
+    target_table = table_map.get(scale_name, "phq9_records")
+    
+    # 执行云端安全插入
+    supabase.table(target_table).insert(data).execute()

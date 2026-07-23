@@ -1,5 +1,5 @@
 /* =========================================
-   1. 字体与颜色绝对统治
+   1. 字体与颜色全局镇压
 ========================================= */
 * { font-family: 'STZhongsong', '华文中宋', 'Noto Serif SC', serif !important; }
 body, .stApp { background-color: #fefae0 !important; }
@@ -7,16 +7,15 @@ body, .stApp { background-color: #fefae0 !important; }
 /* 强制文字深墨绿色 */
 p, span, div, h1, h2, h3, label, li { color: #012d1d !important; }
 
-/* 保护提交按钮的文字颜色 */
-button[kind="primary"] * { color: #fefae0 !important; }
+/* 统一按钮、度量值等的浅色文本 */
+button[kind="primary"] *, [data-testid="stMetricValue"] div { color: #fefae0 !important; }
+[data-testid="stMetricLabel"] div { color: #3f6653 !important; }
 
-/* 居中大容器配置 */
 .block-container { 
     max-width: 820px !important; 
     padding-top: 3rem !important; 
 }
 
-/* 大标题强制不换行 */
 .main-title {
     text-align: center;
     color: #012d1d !important;
@@ -26,7 +25,6 @@ button[kind="primary"] * { color: #fefae0 !important; }
     font-weight: bold !important;
 }
 
-/* 优雅的分割线 */
 .clinical-divider {
     border: none !important;
     height: 1px !important;
@@ -35,44 +33,39 @@ button[kind="primary"] * { color: #fefae0 !important; }
 }
 
 /* =========================================
-   2. 卡片等宽强制对齐 (核弹级修复)
+   2. 卡片等宽强制对齐 
 ========================================= */
-/* 强制 Streamlit 所有的垂直区块撑满 100% 宽度，防止被短文字缩窄 */
 div[data-testid="stVerticalBlock"] > div {
     width: 100% !important;
 }
 
-/* 指导语卡片 与 单选框卡片 采用完全一致的盒模型 */
 .instruction-card, 
-div[data-testid="stRadio"] {
+[data-testid="stRadio"] {
     background-color: #ffffff !important;
     border-radius: 12px !important;
     padding: 30px !important;
     margin-bottom: 25px !important;
-    box-shadow: 0 4px 15px rgba(1, 45, 29, 0.06) !important;
+    box-shadow: 0 4px 15px rgba(1, 45, 29, 0.05) !important;
     border: 1px solid #C9C4B1 !important;
     width: 100% !important; 
     box-sizing: border-box !important;
 }
 
-/* 指导语文字间距 */
 .instruction-card p {
     font-size: 1.1rem !important;
     line-height: 1.8 !important;
     margin-bottom: 12px !important;
 }
 
-/* 题干文字放大加粗 */
 div[data-testid="stRadio"] label[data-testid="stWidgetLabel"] p {
-    font-size: 1.3rem !important;
+    font-size: 1.25rem !important;
     font-weight: bold !important;
-    margin-bottom: 35px !important;
+    margin-bottom: 25px !important;
 }
 
 /* =========================================
-   3. 终极兼容版：格式塔递增空心圆圈
+   3. 格式塔圆圈组件
 ========================================= */
-/* 让选项组横向铺满 */
 div[role="radiogroup"] {
     display: flex !important;
     flex-direction: row !important;
@@ -82,14 +75,12 @@ div[role="radiogroup"] {
     padding-bottom: 15px !important;
 }
 
-/* 兼容嵌套，让每个选项的容器均分宽度 */
 div[role="radiogroup"] > * {
     flex: 1 !important;
     display: flex !important;
     justify-content: center !important;
 }
 
-/* 让 label 充满可用区域，方便点击 */
 label[data-baseweb="radio"] {
     cursor: pointer !important;
     width: 100% !important;
@@ -97,7 +88,6 @@ label[data-baseweb="radio"] {
     justify-content: center !important;
 }
 
-/* 第一步：暴力彻底隐藏原生 input 框和红黑圆圈 */
 label[data-baseweb="radio"] input {
     position: absolute !important;
     opacity: 0 !important;
@@ -109,18 +99,16 @@ label[data-baseweb="radio"] > div:first-of-type {
     display: none !important;
 }
 
-/* 第二步：重塑选项文字 div (上字下圆) */
 label[data-baseweb="radio"] > div:last-of-type {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 20px !important; /* 文字和圆圈的距离 */
+    gap: 15px !important;
     font-size: 1.1rem !important;
     font-weight: 500 !important;
     color: #012d1d !important;
 }
 
-/* 第三步：画出我们自己的空心圆圈 */
 label[data-baseweb="radio"] > div:last-of-type::after {
     content: "";
     display: block;
@@ -130,15 +118,79 @@ label[data-baseweb="radio"] > div:last-of-type::after {
     transition: all 0.2s ease;
 }
 
-/* 第四步：格式塔 4 级尺寸递增 (绝对命中子层级) */
-div[role="radiogroup"] > *:nth-child(1) label > div:last-of-type::after { width: 20px !important; height: 20px !important; }
-div[role="radiogroup"] > *:nth-child(2) label > div:last-of-type::after { width: 32px !important; height: 32px !important; }
-div[role="radiogroup"] > *:nth-child(3) label > div:last-of-type::after { width: 46px !important; height: 46px !important; }
-div[role="radiogroup"] > *:nth-child(4) label > div:last-of-type::after { width: 62px !important; height: 62px !important; }
+/* 4级或5级大小递增 (支持 SCL-90 的 5 级与 PHQ 的 4 级) */
+div[role="radiogroup"] > *:nth-child(1) label > div:last-of-type::after { width: 18px !important; height: 18px !important; }
+div[role="radiogroup"] > *:nth-child(2) label > div:last-of-type::after { width: 26px !important; height: 26px !important; }
+div[role="radiogroup"] > *:nth-child(3) label > div:last-of-type::after { width: 36px !important; height: 36px !important; }
+div[role="radiogroup"] > *:nth-child(4) label > div:last-of-type::after { width: 48px !important; height: 48px !important; }
+div[role="radiogroup"] > *:nth-child(5) label > div:last-of-type::after { width: 62px !important; height: 62px !important; }
 
-/* 第五步：选中状态！利用兄弟选择器实现实心填满 */
 label[data-baseweb="radio"] input:checked ~ div:last-of-type::after {
     background-color: #3f6653 !important;
     box-shadow: 0 0 12px rgba(63, 102, 83, 0.4) !important;
     border-color: #012d1d !important;
+}
+
+/* =========================================
+   4. 临床级报告排版与表格设计
+========================================= */
+.clinical-report-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+}
+
+.report-section {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    border: 1px solid #C9C4B1;
+    box-shadow: 0 4px 15px rgba(1, 45, 29, 0.04);
+}
+
+.report-section-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #012d1d;
+    margin-bottom: 20px;
+    border-left: 5px solid #3f6653;
+    padding-left: 12px;
+}
+
+.clinical-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 20px 0 !important;
+    font-size: 1rem !important;
+    text-align: center !important;
+}
+.clinical-table th, .clinical-table td {
+    border: 1px solid #C9C4B1 !important;
+    padding: 12px !important;
+}
+.clinical-table th {
+    background-color: #f2efd5 !important;
+    font-weight: bold !important;
+    color: #012d1d !important;
+}
+.clinical-table tr:nth-child(even) {
+    background-color: #f8f4db !important;
+}
+
+.highlight-red {
+    color: #ba1a1a !important;
+    font-weight: bold !important;
+}
+.highlight-green {
+    color: #3f6653 !important;
+    font-weight: bold !important;
+}
+
+.factor-desc-card {
+    border-bottom: 1px solid #e7e3ca;
+    padding: 20px 0;
+}
+.factor-desc-card:last-child {
+    border-bottom: none;
 }
