@@ -190,33 +190,32 @@ else:
 
         if selected_scale == "PHQ-9":
             result = calculate_phq9(st.session_state["answers"])
-            # 核心修正：补齐第 5 个参数 "PHQ-9"
             save_record(st.session_state["answers"], result["total_score"], result["severity"], st.session_state["user_id"], "PHQ-9")
             
             st.success("数据收集完成，您的记录已成功保存。")
             st.metric(label="PHQ-9 评估总分", value=result["total_score"])
             st.markdown(f"### 诊断参考：{result['severity']}")
             
-            if st.button("重新测试"):
+            # 核心修正：加入唯一键 key="reset_phq9"
+            if st.button("重新测试", key="reset_phq9"):
                 st.session_state.clear()
                 st.rerun()
             
         elif selected_scale == "GAD-7":
             result = calculate_gad7(st.session_state["answers"])
-            # 核心修正：补齐第 5 个参数 "GAD-7"
             save_record(st.session_state["answers"], result["total_score"], result["severity"], st.session_state["user_id"], "GAD-7")
             
             st.success("数据收集完成，您的记录已成功保存。")
             st.metric(label="GAD-7 评估总分", value=result["total_score"])
             st.markdown(f"### 诊断参考：{result['severity']}")
             
-            if st.button("重新测试"):
+            # 核心修正：加入唯一键 key="reset_gad7"
+            if st.button("重新测试", key="reset_gad7"):
                 st.session_state.clear()
                 st.rerun()
             
         elif selected_scale == "SCL-90":
             result = calculate_scl90(st.session_state["answers"])
-            # 核心修正：补齐第 5 个参数 "SCL-90"
             save_record(st.session_state["answers"], result["total_score"], result["severity"], st.session_state["user_id"], "SCL-90")
             
             gsi_class = "highlight-red" if result["gsi"] >= 2.0 else "highlight-green"
@@ -254,7 +253,7 @@ else:
                 "强迫症状": {"range": "10-50", "desc": "反映临床上的强迫症状群，如强迫观念和仪式行为。高分个体常伴有注意力涣散、决策困难等认知阻碍。"},
                 "人际敏感": {"range": "9-45", "desc": "反映人际交往中的不自在和自卑感。在与他人比较时更为突出，表现为社交退缩、对他人言行过度敏感。"},
                 "抑郁": {"range": "13-65", "desc": "反映抑郁发作的精神状态，如悲观失望、缺乏动力、无价值感。"},
-                "焦虑": {"range": "10-50", "desc": "反映临床焦虑特征，如坐立不安、神经过敏、心跳加快等躯体焦虑征象。"},
+                "焦虑": {"range": "10-50", "desc": "反映临床焦虑特征，如坐立不安、神进入过敏、心跳加快等躯体焦虑征象。"},
                 "敌对": {"range": "6-30", "desc": "从思维、情感和行为上反映敌对表现，如易怒、摔东西、冲动。"},
                 "恐怖": {"range": "7-35", "desc": "反映传统的恐怖症状态，如害怕乘车、人群、高空等特定场合。"},
                 "偏执": {"range": "6-30", "desc": "主要反映猜疑、妄想、被动体验和夸大等偏执性思维基本特征。"},
@@ -466,7 +465,8 @@ else:
 
         # 重新测试
         st.write("")
-        if st.button("重新测试"):
+        # 核心修正：加入唯一键 key="reset_scl90"
+        if st.button("重新测试", key="reset_scl90"):
             st.session_state.clear()
             st.rerun()
             
