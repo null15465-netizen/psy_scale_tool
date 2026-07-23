@@ -45,7 +45,7 @@ scale_db = load_scale_data()
 init_db()
 
 # 侧边栏量表切换
-st.sidebar.markdown("## 📋 量表选择")
+st.sidebar.markdown("## 量表选择")
 selected_scale = st.sidebar.selectbox(
     "请选择您要进行的评估：",
     options=["PHQ-9", "GAD-7", "SCL-90"],
@@ -88,7 +88,7 @@ if not st.session_state["submitted"]:
     st.markdown(f"""
     <div class="instruction-card">
         <p><strong>免费声明：</strong> 本测试完全免费，无需支付任何费用。</p>
-        <p><strong>数据用途：</strong> 数据仅用于心理学科研统计分析，已开启匿名哈希加密，绝不外泄。</p>
+        <p><strong>数据用途：</strong> 数据仅用于心理学科研统计分析，不会泄露您的个人信息。</p>
         <p><strong>测试说明：</strong> 本量表共 {total_questions} 道题，预计耗时 {"10-15" if selected_scale == "SCL-90" else "2-3"} 分钟。</p>
         <p style="margin-bottom: 0;"><strong>测试目的：</strong> {current_scale_data['description']}</p>
     </div>
@@ -340,7 +340,7 @@ else:
 
             # --- 报告与数据导出 ---
             st.markdown("<hr class='clinical-divider'>", unsafe_allow_html=True)
-            st.markdown("### 💾 报告与数据导出")
+            st.markdown("### 报告与数据导出")
             
             with open("assets/custom.css", "r", encoding="utf-8") as f:
                 embedded_css = f.read()
@@ -367,7 +367,7 @@ else:
                     <div class="instruction-card" style="background-color:#ffffff; padding:30px; border-radius:12px; border: 1px solid #C9C4B1; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(1, 45, 29, 0.05);">
                         <p style="margin-bottom: 15px; font-size:1.05rem;"><strong>被试代号：</strong>{st.session_state['user_id']}</p>
                         <p style="margin-bottom: 15px; font-size:1.05rem;"><strong>评估时间：</strong>{current_time}</p>
-                        <p style="margin-bottom: 0; font-size:1.05rem;"><strong>安全声明：</strong>本报告基于专业心理学量表计算得出，数据已安全加密。本报告仅供科研与自我认知参考，不替代临床医学诊断。</p>
+                        <p style="margin-bottom: 0; font-size:1.05rem;"><strong>安全声明：</strong>本报告基于专业心理学量表计算得出，仅供科研与自我认知参考，不替代临床医学诊断。</p>
                     </div>
                     
                     <div class="clinical-report-container">
@@ -448,7 +448,7 @@ else:
             exp_cols = st.columns(2)
             with exp_cols[0]:
                 st.download_button(
-                    label="📥 导出 HTML 离线报告 (可打印PDF)",
+                    label="导出 HTML 离线报告 (可打印PDF)",
                     data=html_report_content,
                     file_name=f"SCL90_Report_{st.session_state['user_id']}.html",
                     mime="text/html",
@@ -456,7 +456,7 @@ else:
                 )
             with exp_cols[1]:
                 st.download_button(
-                    label="📊 导出 Excel (CSV) 原始数据",
+                    label="导出 Excel (CSV) 原始数据",
                     data=csv_content.encode("utf-8-sig"),
                     file_name=f"SCL90_Data_{st.session_state['user_id']}.csv",
                     mime="text/csv",
