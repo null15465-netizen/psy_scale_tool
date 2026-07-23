@@ -1,37 +1,40 @@
 /* =========================================
-   1. 字体与颜色全局镇压 (排除图标字体)
+   1. 样式作用域隔离 (CSS Scoping)
+   只将华文中宋和墨绿色应用到我们自己的卡片上，
+   绝对不污染 Streamlit 官方的头部导航、侧边栏和图标按钮！
 ========================================= */
-/* 核心修复：排除 .material-symbols-outlined 等图标字体，防止图标退化为英文单词 */
-*:not(.material-symbols-outlined):not(.material-icons):not([class*="icon"]) {
+
+/* A. 字体隔离：仅对我们的标题、卡片、报告区应用华文中宋 */
+.main-title, 
+.instruction-card, .instruction-card *, 
+[data-testid="stRadio"], [data-testid="stRadio"] *, 
+.clinical-report-container, .clinical-report-container * {
     font-family: 'STZhongsong', '华文中宋', 'Noto Serif SC', serif !important;
 }
 
-/* 强制文字深墨绿色 */
-p, span, div, h1, h2, h3, label, li { color: #012d1d !important; }
+/* B. 颜色隔离：仅对我们的内容文本应用深墨绿色，绝不误伤官方按钮和图标 */
+.main-title,
+.instruction-card p, .instruction-card strong,
+[data-testid="stRadio"] label[data-testid="stWidgetLabel"] p,
+div[role="radiogroup"] label p,
+.clinical-report-container div, .clinical-report-container td, .clinical-report-container th {
+    color: #012d1d !important;
+}
 
-/* 统一按钮、度量值等的浅色文本 */
-button[kind="primary"] *, [data-testid="stMetricValue"] div { color: #fefae0 !important; }
-[data-testid="stMetricLabel"] div { color: #3f6653 !important; }
+/* 全局背景色保持米黄 */
+.stApp {
+    background-color: #fefae0 !important;
+}
 
+/* 主操作按钮文字保持米白 */
+button[kind="primary"] * {
+    color: #fefae0 !important;
+}
+
+/* 居中大容器配置 */
 .block-container { 
     max-width: 820px !important; 
     padding-top: 3rem !important; 
-}
-
-.main-title {
-    text-align: center;
-    color: #012d1d !important;
-    margin-bottom: 30px;
-    white-space: nowrap !important;
-    font-size: 2.2rem !important;
-    font-weight: bold !important;
-}
-
-.clinical-divider {
-    border: none !important;
-    height: 1px !important;
-    background-color: rgba(1, 45, 29, 0.15) !important;
-    margin: 25px 0 !important;
 }
 
 /* =========================================
@@ -41,13 +44,14 @@ div[data-testid="stVerticalBlock"] > div {
     width: 100% !important;
 }
 
+/* 指导语卡片 与 题目卡片 */
 .instruction-card, 
 [data-testid="stRadio"] {
     background-color: #ffffff !important;
     border-radius: 12px !important;
     padding: 30px !important;
     margin-bottom: 25px !important;
-    box-shadow: 0 4px 15px rgba(1, 45, 29, 0.05) !important;
+    box-shadow: 0 4px 15px rgba(1, 45, 29, 0.04) !important;
     border: 1px solid #C9C4B1 !important;
     width: 100% !important; 
     box-sizing: border-box !important;
@@ -65,9 +69,18 @@ div[data-testid="stRadio"] label[data-testid="stWidgetLabel"] p {
     margin-bottom: 25px !important;
 }
 
+/* 分割线 */
+.clinical-divider {
+    border: none !important;
+    height: 1px !important;
+    background-color: rgba(1, 45, 29, 0.15) !important;
+    margin: 25px 0 !important;
+}
+
 /* =========================================
-   3. 格式塔圆圈组件 (支持扩大点击热区与悬浮反馈)
+   3. 格式塔圆圈组件 (精准的层级穿透)
 ========================================= */
+/* 让选项组横向铺满 */
 div[role="radiogroup"] {
     display: flex !important;
     flex-direction: row !important;
@@ -77,50 +90,54 @@ div[role="radiogroup"] {
     padding-bottom: 15px !important;
 }
 
+/* 均分宽度 */
 div[role="radiogroup"] > * {
     flex: 1 !important;
     display: flex !important;
     justify-content: center !important;
 }
 
-/* 核心修复（Fitts's Law）：将每个选项 label 变成带内边距和悬浮反馈的响应式大热区 */
-label[data-baseweb="radio"] {
+/* 核心修复（Fitts's Law）：利用 stRadio 内部的通用 label 标签定位，扩大点击热区 */
+[data-testid="stRadio"] div[role="radiogroup"] label {
     cursor: pointer !important;
     width: 100% !important;
     display: flex !important;
-    justify-content: center !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    height: 95px !important; /* 锁定高度，让圆圈完美在最底部对齐 */
     padding: 12px 8px !important; /* 核心：增加内边距，显著扩大点击热区 */
     border-radius: 8px !important;
     transition: background-color 0.15s ease !important; /* 平滑过渡效果 */
+    gap: 15px !important;
 }
 
 /* 增加触控悬浮状态提示：鼠标悬停或手指触摸时，整块区域微显浅墨绿色背景 */
-label[data-baseweb="radio"]:hover {
+[data-testid="stRadio"] div[role="radiogroup"] label:hover {
     background-color: rgba(63, 102, 83, 0.04) !important;
 }
 
-label[data-baseweb="radio"] input {
-    position: absolute !important;
+/* 隐藏原生红黑单选圆点 */
+[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child,
+[data-testid="stRadio"] div[role="radiogroup"] input {
+    display: none !important;
     opacity: 0 !important;
     width: 0 !important;
     height: 0 !important;
-    margin: 0 !important;
-}
-label[data-baseweb="radio"] > div:first-of-type {
-    display: none !important;
+    position: absolute !important;
 }
 
-label[data-baseweb="radio"] > div:last-of-type {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 15px !important;
-    font-size: 1.1rem !important;
+/* 选项文字样式并往上顶 */
+[data-testid="stRadio"] div[role="radiogroup"] label > div:last-child {
+    font-size: 1rem !important;
     font-weight: 500 !important;
-    color: #012d1d !important;
+    color: #414844 !important;
+    text-align: center !important;
+    margin-bottom: auto !important; 
 }
 
-label[data-baseweb="radio"] > div:last-of-type::after {
+/* 用伪元素绘制空心圆圈 */
+[data-testid="stRadio"] div[role="radiogroup"] label::after {
     content: "";
     display: block;
     border: 2px solid #3f6653 !important;
@@ -130,14 +147,16 @@ label[data-baseweb="radio"] > div:last-of-type::after {
     transition: all 0.2s ease;
 }
 
-/* 4级或5级大小递增 */
-div[role="radiogroup"] > *:nth-child(1) label > div:last-of-type::after { width: 18px !important; height: 18px !important; }
-div[role="radiogroup"] > *:nth-child(2) label > div:last-of-type::after { width: 26px !important; height: 26px !important; }
-div[role="radiogroup"] > *:nth-child(3) label > div:last-of-type::after { width: 36px !important; height: 36px !important; }
-div[role="radiogroup"] > *:nth-child(4) label > div:last-of-type::after { width: 48px !important; height: 48px !important; }
-div[role="radiogroup"] > *:nth-child(5) label > div:last-of-type::after { width: 62px !important; height: 62px !important; }
+/* 4级或5级大小递增 (兼容新旧版 Streamlit 的 nth-child) */
+div[role="radiogroup"] > *:nth-child(1) label::after, div[role="radiogroup"] > label:nth-child(1)::after { width: 18px !important; height: 18px !important; }
+div[role="radiogroup"] > *:nth-child(2) label::after, div[role="radiogroup"] > label:nth-child(2)::after { width: 26px !important; height: 26px !important; }
+div[role="radiogroup"] > *:nth-child(3) label::after, div[role="radiogroup"] > label:nth-child(3)::after { width: 36px !important; height: 36px !important; }
+div[role="radiogroup"] > *:nth-child(4) label::after, div[role="radiogroup"] > label:nth-child(4)::after { width: 48px !important; height: 48px !important; }
+div[role="radiogroup"] > *:nth-child(5) label::after, div[role="radiogroup"] > label:nth-child(5)::after { width: 62px !important; height: 62px !important; }
 
-label[data-baseweb="radio"] input:checked ~ div:last-of-type::after {
+/* 选中状态：实心填满 */
+[data-testid="stRadio"] div[role="radiogroup"] label input:checked ~ div:last-of-type::after,
+[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked)::after {
     background-color: #3f6653 !important;
     box-shadow: 0 0 12px rgba(63, 102, 83, 0.4) !important;
     border-color: #012d1d !important;
