@@ -4,7 +4,7 @@
 * { font-family: 'STZhongsong', '华文中宋', 'Noto Serif SC', serif !important; }
 body, .stApp { background-color: #fefae0 !important; }
 
-/* 强制文字深墨绿色 */
+/* 强制文字极深墨绿色 */
 p, span, div, h1, h2, h3, label, li { color: #012d1d !important; }
 
 /* 统一按钮、度量值等的浅色文本 */
@@ -64,7 +64,7 @@ div[data-testid="stRadio"] label[data-testid="stWidgetLabel"] p {
 }
 
 /* =========================================
-   3. 格式塔圆圈组件
+   3. 格式塔圆圈组件 (桌面端基础尺寸)
 ========================================= */
 div[role="radiogroup"] {
     display: flex !important;
@@ -115,10 +115,11 @@ label[data-baseweb="radio"] > div:last-of-type::after {
     border: 2px solid #3f6653 !important;
     border-radius: 50% !important;
     background-color: transparent !important;
+    flex-shrink: 0 !important;
     transition: all 0.2s ease;
 }
 
-/* 4级或5级大小递增 (支持 SCL-90 的 5 级与 PHQ 的 4 级) */
+/* 4级或5级大小递增 (桌面端默认) */
 div[role="radiogroup"] > *:nth-child(1) label > div:last-of-type::after { width: 18px !important; height: 18px !important; }
 div[role="radiogroup"] > *:nth-child(2) label > div:last-of-type::after { width: 26px !important; height: 26px !important; }
 div[role="radiogroup"] > *:nth-child(3) label > div:last-of-type::after { width: 36px !important; height: 36px !important; }
@@ -178,14 +179,8 @@ label[data-baseweb="radio"] input:checked ~ div:last-of-type::after {
     background-color: #f8f4db !important;
 }
 
-.highlight-red {
-    color: #ba1a1a !important;
-    font-weight: bold !important;
-}
-.highlight-green {
-    color: #3f6653 !important;
-    font-weight: bold !important;
-}
+.highlight-red { color: #ba1a1a !important; font-weight: bold !important; }
+.highlight-green { color: #3f6653 !important; font-weight: bold !important; }
 
 .factor-desc-card {
     border-bottom: 1px solid #e7e3ca;
@@ -193,4 +188,41 @@ label[data-baseweb="radio"] input:checked ~ div:last-of-type::after {
 }
 .factor-desc-card:last-child {
     border-bottom: none;
+}
+
+/* =========================================
+   5. 手机移动端响应式适配 (核心修复)
+========================================= */
+@media (max-width: 640px) {
+    /* 缩小容器外边距 */
+    .block-container {
+        padding-top: 1.5rem !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    
+    /* 缩小卡片内边距，释放屏幕空间 */
+    .instruction-card, [data-testid="stRadio"], .report-section {
+        padding: 16px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    /* 缩减题干字号 */
+    [data-testid="stRadio"] label[data-testid="stWidgetLabel"] p {
+        font-size: 1.05rem !important;
+        margin-bottom: 15px !important;
+    }
+    
+    /* 缩减选项文字大小，防止拥挤换行 */
+    div[role="radiogroup"] label[data-baseweb="radio"] p {
+        font-size: 0.85rem !important;
+        height: 25px !important;
+    }
+    
+    /* 等比例缩小移动端圆圈尺寸，确保在 320px 手机上绝不溢出 */
+    div[role="radiogroup"] > *:nth-child(1) label::after { width: 14px !important; height: 14px !important; }
+    div[role="radiogroup"] > *:nth-child(2) label::after { width: 22px !important; height: 22px !important; }
+    div[role="radiogroup"] > *:nth-child(3) label::after { width: 32px !important; height: 32px !important; }
+    div[role="radiogroup"] > *:nth-child(4) label::after { width: 44px !important; height: 44px !important; }
+    div[role="radiogroup"] > *:nth-child(5) label::after { width: 56px !important; height: 56px !important; }
 }
