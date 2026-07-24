@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Coding Skill Asset - 测量工具引擎</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --text-color: #0f172a;
+            --border-color: #cbd5e1;
+            --primary-color: #012d1d;
+            --accent-color: #3f6653;
+            --card-bg: #ffffff;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.7; padding: 40px; margin: 0 auto; max-width: 1100px; }
+        .header { border-bottom: 2px solid var(--border-color); padding-bottom: 20px; margin-bottom: 40px; text-align: center; }
+        .header h1 { font-size: 2.2rem; color: var(--primary-color); margin-bottom: 10px; }
+        .header p { color: var(--text-color); font-size: 1.1rem; margin: 0; }
+        .section-card { background: var(--card-bg); border-radius: 12px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .section-title { font-size: 1.5rem; color: var(--primary-color); border-left: 5px solid var(--accent-color); padding-left: 15px; margin-top: 0; margin-bottom: 20px; }
+        .skill-box { background-color: #0f172a; color: #f8fafc; padding: 25px; border-radius: 8px; font-family: 'Courier New', Courier, monospace; overflow-x: auto; font-size: 0.95rem; line-height: 1.5; border: 1px solid #1e293b; margin-top: 20px; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 10px; }
+        code { background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #b91c1c; font-size: 0.95em; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background-color: #e0f2fe; color: #0369a1; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Vibe Coding Skill Asset <span class="badge">v1.0.0</span></h1>
+        <p>资产名称：多属性测量与问卷系统引擎生成器 (multi-scale-engine-generator)</p>
+    </div>
+
+    <!-- 理论支撑 -->
+    <div class="section-card">
+        <h2 class="section-title">一、 方法论认知对齐 (Methodology Alignment)</h2>
+        <p>本资产完全遵循 <code>tradecatlabs/vibe-coding-cn</code> 的开发哲学。当此技能被注入 AI 协作窗口时，AI 将被赋予以下工程认知：</p>
+        <ul>
+            <li><strong>生成域边界锁定</strong>：不再产生无法追溯逻辑和数据的硬编码前端页面，强制转为“数据驱动（Data-Driven）”架构。</li>
+            <li><strong>胶水能力编排</strong>：不重复编写轮子，将 <code>Streamlit 1.60.0+</code>（会话状态View）、<code>pytest</code>（算法质量门禁）、<code>Supabase/PostgreSQL</code>（云端数据安全持久化）以及 <code>CSS 作用域隔离令牌</code> 进行高内聚拼接。</li>
+            <li><strong>隔离审查规范</strong>：所有的算法逻辑更改必须经过隔离测试验证，拒绝让生成器执行自我偏好审查。</li>
+        </ul>
+    </div>
+
+    <!-- 输入模式 -->
+    <div class="section-card">
+        <h2 class="section-title">二、 标准输入接口定义 (Standard Input Schema)</h2>
+        <p>在复用此技能时，用户（你）只需向 AI 提供以下数据接口。AI 即可完全理解业务，并在 0 行代码修改的情况下生成全新的问卷：</p>
+        <ol>
+            <li><strong>量表元数据：</strong> 量表名称、指导语文本、单页题目渲染密度（QUESTIONS_PER_PAGE）。</li>
+            <li><strong>题库对象：</strong> 包含 <code>id</code> 与 <code>text</code> 的题目列表 JSON。</li>
+            <li><strong>选项字典：</strong> 包含 <code>label</code> 与对应权重 <code>score</code> 的多级李克特选项配置。</li>
+            <li><strong>算法约束：</strong> 得分的极端边界条件、逆向计分题号（如有）、各因子的题号映射规则。</li>
+        </ol>
+    </div>
+
+    <!-- 目录树规范 -->
+    <div class="section-card">
+        <h2 class="section-title">三、 标准化物理目录树架构</h2>
+        <p>无论生成任何量表，AI 必须严格遵守以下物理文件层级的解耦与隔离规范：</p>
+        <ul>
+            <li><code>[项目根目录]/data/scales.json</code>：<strong>数据层 (Model)</strong>。存储纯数据配置。</li>
+            <li><code>[项目根目录]/logic/scoring.py</code>：<strong>逻辑层 (Logic / Controller)</strong>。编写纯函数计分引擎，强类型约束。</li>
+            <li><code>[项目根目录]/logic/database.py</code>：<strong>持久化层 (Persistence)</strong>。通过 RLS 隔离策略将数据安全写入 Supabase。</li>
+            <li><code>[项目根目录]/tests/test_scoring.py</code>：<strong>质量门禁层 (Quality Gate)</strong>。存放 pytest 自动化测试用例。</li>
+            <li><code>[项目根目录]/app.py</code>：<strong>控制层与视图层 (View)</strong>。加载 CSS、Session State 状态保持、表单阻断式校验、动态路由。</li>
+            <li><code>[项目根目录]/assets/custom.css</code>：<strong>表现设计层 (Style Token)</strong>。限制作用域，覆写原生单选组件，实现选项尺寸递增。</li>
+        </ul>
+    </div>
+
+    <!-- 终极 Skill 文本 -->
+    <div class="section-card">
+        <h2 class="section-title">四、 终极资产：Vibe Coding 技能投喂 Prompt 模板</h2>
+        <p>当你需要开发新领域的问卷或评测工具时（无论是财务能力评估、用户满意度还是新的心理量表），请<strong>直接复制以下灰色框内的全部文本</strong>，新建一个项目，直接投喂给 Windsurf 或 Claude 的对话框：</p>
+        
+        <div class="skill-box">
+# Vibe Coding Skill: multi-scale-engine-generator
+
+你现在是高级软件架构师，正在执行“多属性测量与问卷系统引擎生成器”的高阶技能。
+请读取给定量表的数据定义，严格遵循以下 5 层软件工程架构规范在本地进行环境配置与代码生成。
+
+## 1. 物理目录与解耦规范
+- 题库必须写入 `data/scales.json`（Model 层，禁止硬编码题目）。
+- 计分逻辑必须写入 `logic/scoring.py`（Logic 层，禁止与 UI 混合）。
+- 数据库操作必须写入 `logic/database.py`（采用 supabase，参数对齐）。
+- 自动化测试必须写入 `tests/test_scoring.py`（Quality Gate）。
+- 主程序必须写入 `app.py`（View 层，Streamlit）。
+- 样式修饰必须写入 `assets/custom.css`（CSS 作用域隔离）。
+
+## 2. 严格质量门禁规则 (Quality Gates)
+- 在 `logic/scoring.py` 中，所有计算函数必须使用强类型约束（Type Hints）如 `List[int], Dict[str, Union[int, str]]`。
+- 必须编写防呆边界拦截（如少答题、超纲分数必须在函数入口直接抛出 ValueError）。
+- 必须使用 `pytest` 编写 4 个以上的自动化极值测试。测试全绿通过前，禁止开发前端页面。
+- 严格表单校验：在 `app.py` 中，使用 `st.radio` 且设置 `index=None` 取消默认选择。未填满当前页所有题目时，必须在前端红字阻断跳转或提交。
+
+## 3. 表现层魔改规范 (CSS Overriding)
+- 禁止使用 `*` 通配符进行全局字体覆写，必须使用 scoped（作用域选择器）防止污染 Streamlit 官方头部和侧边栏的图标字体。
+- 覆盖 `.stApp` 将背景色设置为书香木质渐变。
+- 使用 `[data-testid="stRadio"]` 覆写单选框容器为白色等宽卡片（width: 100%; box-sizing: border-box）。
+- 隐藏原生 radio 的圆点。重塑 `label` 为垂直排布（文字在上，自绘空心圆在下）。
+- 根据 `scales.json` 的选项个数，使用 `label:nth-child(n)::after` 伪元素实现圆圈大小的等比级数递增，选中时使用 `#3f6653` 进行实心填充。
+
+## 4. 交付与配置
+- 必须生成干净的 `requirements.txt`。
+- 本地开发验证完成后，必须指导用户提交 Git 闭环，并配置 Streamlit Cloud Secrets。
+
+现在，请等待我向你输入新的量表数据定义，并准备开始拆解 TODO.md 任务表。
+        </div>
+    </div>
+
+</body>
+</html>
