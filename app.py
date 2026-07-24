@@ -34,7 +34,7 @@ if "answers" not in st.session_state:
     st.session_state["answers"] = []
 
 # ==========================================
-# 3. 数据加载与侧边栏路由
+# 3. 数据加载与 URL 路由解析 (Router)
 # ==========================================
 @st.cache_data
 def load_scale_data(filepath="data/scales.json"):
@@ -44,15 +44,32 @@ def load_scale_data(filepath="data/scales.json"):
 scale_db = load_scale_data()
 init_db()
 
+# 核心改动：解析浏览器地址栏参数（例如 ?scale=scl-90）
+query_params = st.query_params
+query_scale = query_params.get("scale", "").upper().strip()
+
+# 自动匹配对应量表的默认索引
+scale_keys = list(scale_db.keys())
+default_index = 0
+
+if query_scale in scale_keys:
+    default_index = scale_keys.index(query_scale)
+elif query_scale.replace("-", "") in [k.lower().replace("-", "") for k in scale_keys]:
+    # 兼容中划线，如 scl90 或 scl-90 均能匹配到 SCL-90
+    for idx, k in enumerate(scale_keys):
+        if k.lower().replace("-", "") == query_scale.replace("-", ""):
+            default_index = idx
+            break
+
 # 侧边栏量表选择
 st.sidebar.markdown("## 量表选择")
 selected_scale = st.sidebar.selectbox(
     "请选择您要进行的评估：",
-    options=list(scale_db.keys()),
-    index=0
+    options=scale_keys,
+    index=default_index # 使用解析出的默认索引，实现直达
 )
 
-# 路由守护：切换量表时重置
+# 路由守护：当切换量表时清空状态
 if "current_scale" not in st.session_state:
     st.session_state["current_scale"] = selected_scale
 
@@ -77,7 +94,7 @@ except ModuleNotFoundError:
 if len(st.session_state["answers"]) != len(current_scale_data["questions"]):
     st.session_state["answers"] = [None] * len(current_scale_data["questions"])
 
-# 动态设定分页大小 (SCL-90为10题，SDS/SAS为5题，PHQ-9/GAD-7为3题)
+# 动态设定分页大小
 if selected_scale == "SCL-90":
     QUESTIONS_PER_PAGE = 10
 elif selected_scale in ["SDS", "SAS"]:
@@ -104,14 +121,14 @@ if not st.session_state["submitted"]:
     st.markdown(f"""
     <div class="instruction-card">
         <p><strong>免费声明：</strong> 本测试完全免费，无需支付任何费用。</p>
-        <p><strong>数据用途：</strong> 数据仅用于心理学科研统计分析，不会泄露您的个人信息。</p>
+        <p><strong>数据用途：</strong> 数据仅用于心理学科研统计分析，已开启匿名哈希加密，绝不外泄。</p>
         <p><strong>测试说明：</strong> 本量表共 {total_questions} 道题，预计耗时 {"10-15" if selected_scale == "SCL-90" else "2-3"} 分钟。</p>
         <p style="margin-bottom: 0;"><strong>测试目的：</strong> {current_scale_data['description']}</p>
     </div>
     """, unsafe_allow_html=True)
     
     st.session_state["user_id"] = st.text_input(
-        "请输入您的被试编号或昵称（如 P01）：", 
+        "请输入您的被试编号或昵称（如 P01，以便记录）：", 
         value=st.session_state["user_id"]
     )
     
@@ -214,7 +231,7 @@ else:
         st.markdown(clean_html(result["html_report"]), unsafe_allow_html=True)
 
         st.markdown("<hr class='clinical-divider'>", unsafe_allow_html=True)
-        st.markdown("### 报告与数据导出")
+        st.markdown("### 💾 报告与数据导出")
         
         with open("assets/custom.css", "r", encoding="utf-8") as f:
             embedded_css = f.read()
@@ -249,6 +266,7 @@ else:
         </html>
         """
         
+        # 组装自适应 CSV 数据
         csv_content = result.get("csv_header", f"评估量表,{selected_scale}\n")
         csv_content += f"被试代号,{st.session_state['user_id']}\n评估时间,{current_time}\n"
         csv_content += result.get("csv_rows", f"总分,{result['total_score']},{result['severity']},-\n")
