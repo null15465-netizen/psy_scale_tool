@@ -20,7 +20,7 @@ def clean_html(html_str: str) -> str:
     return "".join([line.strip() for line in html_str.split("\n")])
 
 # ==========================================
-# 2. 状态初始化 (必须在所有 UI 渲染之前执行)
+# 2. 状态初始化
 # ==========================================
 if "user_id" not in st.session_state:
     st.session_state["user_id"] = ""
@@ -48,11 +48,11 @@ init_db()
 st.sidebar.markdown("## 量表选择")
 selected_scale = st.sidebar.selectbox(
     "请选择您要进行的评估：",
-    options=list(scale_db.keys()), # 动态从 JSON 读取量表列表，免去手动维护
+    options=list(scale_db.keys()),
     index=0
 )
 
-# 路由守护：当切换量表时清空状态
+# 路由守护：切换量表时重置
 if "current_scale" not in st.session_state:
     st.session_state["current_scale"] = selected_scale
 
@@ -64,9 +64,8 @@ if st.session_state["current_scale"] != selected_scale:
 current_scale_data = scale_db[selected_scale]
 
 # ==========================================
-# 4. 动态载入对应算法模块 (核构解耦的核心)
+# 4. 动态载入对应算法模块
 # ==========================================
-# 转换量表名为小写下划线格式，如 "SCL-90" -> "scl90"
 module_name = selected_scale.lower().replace("-", "")
 try:
     scale_module = importlib.import_module(f"logic.scales.{module_name}")
@@ -78,8 +77,14 @@ except ModuleNotFoundError:
 if len(st.session_state["answers"]) != len(current_scale_data["questions"]):
     st.session_state["answers"] = [None] * len(current_scale_data["questions"])
 
-# 动态设定分页大小
-QUESTIONS_PER_PAGE = 10 if selected_scale == "SCL-90" else 3
+# 动态设定分页大小 (SCL-90为10题，SDS/SAS为5题，PHQ-9/GAD-7为3题)
+if selected_scale == "SCL-90":
+    QUESTIONS_PER_PAGE = 10
+elif selected_scale in ["SDS", "SAS"]:
+    QUESTIONS_PER_PAGE = 5
+else:
+    QUESTIONS_PER_PAGE = 3
+
 total_questions = len(current_scale_data["questions"])
 total_pages = math.ceil(total_questions / QUESTIONS_PER_PAGE)
 
@@ -99,14 +104,14 @@ if not st.session_state["submitted"]:
     st.markdown(f"""
     <div class="instruction-card">
         <p><strong>免费声明：</strong> 本测试完全免费，无需支付任何费用。</p>
-        <p><strong>数据用途：</strong> 数据仅用于心理学科研统计分析，已开启匿名哈希加密，绝不外泄。</p>
+        <p><strong>数据用途：</strong> 数据仅用于心理学科研统计分析，不会泄露您的个人信息。</p>
         <p><strong>测试说明：</strong> 本量表共 {total_questions} 道题，预计耗时 {"10-15" if selected_scale == "SCL-90" else "2-3"} 分钟。</p>
         <p style="margin-bottom: 0;"><strong>测试目的：</strong> {current_scale_data['description']}</p>
     </div>
     """, unsafe_allow_html=True)
     
     st.session_state["user_id"] = st.text_input(
-        "请输入您的被试编号或昵称（如 P01，以便记录）：", 
+        "请输入您的被试编号或昵称（如 P01）：", 
         value=st.session_state["user_id"]
     )
     
@@ -193,14 +198,11 @@ else:
     # ==========================================
     st.markdown("<h1 class='main-title'>评估报告</h1>", unsafe_allow_html=True)
     try:
-        # 获取北京时间用于导出报告
         tz_beijing = timezone(timedelta(hours=8))
         current_time = datetime.now(tz_beijing).strftime("%Y-%m-%d %H:%M:%S")
 
-        # 核心解耦：直接调用动态载入的模块执行计算
         result = scale_module.calculate(st.session_state["answers"])
         
-        # 保存到 Supabase
         save_record(
             st.session_state["answers"], 
             result["total_score"], 
@@ -209,17 +211,14 @@ else:
             selected_scale
         )
         
-        # 页面端渲染 (直接渲染模块内自带的高保真 HTML 报告)
         st.markdown(clean_html(result["html_report"]), unsafe_allow_html=True)
 
-        # 导出层
         st.markdown("<hr class='clinical-divider'>", unsafe_allow_html=True)
-        st.markdown("### 💾 报告与数据导出")
+        st.markdown("### 报告与数据导出")
         
         with open("assets/custom.css", "r", encoding="utf-8") as f:
             embedded_css = f.read()
         
-        # 组装完全自持的离线 HTML 报告
         html_report_content = f"""<!DOCTYPE html>
         <html lang="zh-CN">
         <head>
@@ -250,7 +249,6 @@ else:
         </html>
         """
         
-        # 组装自适应 CSV 数据
         csv_content = result.get("csv_header", f"评估量表,{selected_scale}\n")
         csv_content += f"被试代号,{st.session_state['user_id']}\n评估时间,{current_time}\n"
         csv_content += result.get("csv_rows", f"总分,{result['total_score']},{result['severity']},-\n")
@@ -273,7 +271,6 @@ else:
                 use_container_width=True
             )
 
-        # 重新测试 (利用动态量表名分配唯一 Key)
         st.write("")
         if st.button("重新测试", key=f"reset_{module_name}"):
             st.session_state.clear()
