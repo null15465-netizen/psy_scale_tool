@@ -244,18 +244,23 @@ else:
             <style>
                 {embedded_css}
                 @media print {{
-                    body {{ background-color: #ffffff !important; padding: 20px !important; }}
+                    body {{ background-color: #ffffff !important; padding: 20px !important; color: #1c201d !important; }}
                     .block-container {{ max-width: 100% !important; }}
-                    .instruction-card {{ box-shadow: none !important; }}
+                    .instruction-card {{ box-shadow: none !important; background-color: #ffffff !important; border-color: #cccccc !important; }}
+                    .main-title, .instruction-card *, .clinical-report-container *, .report-section, .clinical-table, .clinical-table * {{ color: #1c201d !important; }}
+                    .report-section {{ background-color: #ffffff !important; border-color: #cccccc !important; box-shadow: none !important; }}
+                    .clinical-table th {{ background-color: #f0f0ec !important; }}
+                    .highlight-red {{ color: #ba1a1a !important; }}
+                    .highlight-green {{ color: #3f6653 !important; }}
                 }}
             </style>
         </head>
-        <body class="bg-surface-dim antialiased" style="background-color: #fefae0; padding: 40px 20px;">
+        <body class="bg-surface-dim antialiased" style="background-color: #0a0e0c; padding: 40px 20px;">
             <div class="block-container" style="max-width: 800px; margin: 0 auto;">
-                <h1 class="main-title" style="text-align: center; color: #012d1d; font-size: 2.2rem; font-weight: bold; margin-bottom: 30px;">
+                <h1 class="main-title" style="text-align: center; color: #f1ede1; font-size: 2.2rem; font-weight: bold; margin-bottom: 30px;">
                     {current_scale_data['name']} 评估报告
                 </h1>
-                <div class="instruction-card" style="background-color:#ffffff; padding:30px; border-radius:12px; border: 1px solid #C9C4B1; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(1, 45, 29, 0.05);">
+                <div class="instruction-card" style="background-color:#151a17; padding:30px; border-radius:14px; border: 1px solid rgba(241,237,225,0.14); margin-bottom: 30px; box-shadow: 0 6px 24px rgba(0,0,0,0.35);">
                     <p style="margin-bottom: 15px; font-size:1.05rem;"><strong>被试代号：</strong>{st.session_state['user_id']}</p>
                     <p style="margin-bottom: 15px; font-size:1.05rem;"><strong>评估时间：</strong>{current_time}</p>
                     <p style="margin-bottom: 0; font-size:1.05rem;"><strong>安全声明：</strong>本报告基于专业心理学量表计算得出，数据保密。本报告仅供科研与自我认知参考，不替代临床医学诊断。</p>

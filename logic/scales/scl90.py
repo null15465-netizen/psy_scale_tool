@@ -119,7 +119,7 @@ def calculate(scores: List[int]) -> Dict[str, Any]:
     desc_cards_html = ""
     for f_name, f_desc in desc_mapping.items():
         f_data = factors_report[f_name]
-        desc_cards_html += f"<div class='factor-desc-card'><h4 style='font-weight:bold; font-size:1.15rem; color:#012d1d; margin-bottom:10px;'>{f_name}</h4><p style='color:#1d4ed8; font-weight:600; margin-bottom:8px; font-size:1rem;'>您的得分为 {f_data['total']} 分 (均分 {f_data['mean']:.2f})</p><p style='font-size:0.95rem; color:#475569; line-height:1.6;'>总分范围在 {f_desc['range']} 分之间。{f_desc['desc']}</p></div>"
+        desc_cards_html += f"<div class='factor-desc-card'><h4 style='font-weight:bold; font-size:1.15rem; color:#f1ede1; margin-bottom:10px;'>{f_name}</h4><p style='color:#a8bfae; font-weight:600; margin-bottom:8px; font-size:1rem;'>您的得分为 {f_data['total']} 分 (均分 {f_data['mean']:.2f})</p><p style='font-size:0.95rem; color:#a9b8ad; line-height:1.6;'>总分范围在 {f_desc['range']} 分之间。{f_desc['desc']}</p></div>"
 
     gsi_class = "highlight-red" if gsi >= 2.0 else "highlight-green"
 
@@ -148,7 +148,7 @@ def calculate(scores: List[int]) -> Dict[str, Any]:
                     <tr><td>阳性症状均分</td><td>{psdi}</td><td>-</td><td>0~5</td></tr>
                 </tbody>
             </table>
-            <p style="font-size: 0.95rem; color: #414844; line-height: 1.6; margin-top: 15px;">
+            <p style="font-size: 0.95rem; color: #a9b8ad; line-height: 1.6; margin-top: 15px;">
                 <strong>说明：</strong>按全国正常人 SCL-90 常模(N=1388)(1-5级评分)，当测试总分超过160分，或阳性项目数超过43项，需考虑筛选阳性。您的测试总分为 {total_score} 分，您的阳性项目数为 {pos_count} 项，综合以上结果，您的总评估结果为阳性，按总症状指数，总的测试评级为 {severity}。
             </p>
         </div>
