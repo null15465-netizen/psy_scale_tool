@@ -285,3 +285,68 @@ div[role="radiogroup"]:has(> *:nth-child(8)) > label:nth-child(n)::after {
     width: 28px !important;
     height: 28px !important;
 }
+
+/* =========================================
+   7. 多模块问卷：模块说明、部分标题、指导语、提示卡
+========================================= */
+.module-card {
+    background-color: rgba(168, 191, 174, 0.10) !important;
+    border: 1px solid rgba(168, 191, 174, 0.35) !important;
+    border-left: 5px solid #a8bfae !important;
+    border-radius: 14px !important;
+    padding: 22px 26px !important;
+    margin-bottom: 25px !important;
+    box-sizing: border-box !important;
+}
+.module-card p {
+    font-size: 1.02rem !important;
+    line-height: 1.9 !important;
+    margin-bottom: 10px !important;
+    color: #d5e0d8 !important;
+}
+.module-card p:last-child {
+    margin-bottom: 0 !important;
+}
+.module-card strong {
+    color: #f1ede1 !important;
+    letter-spacing: .08em;
+}
+
+.section-title {
+    font-size: 1.45rem !important;
+    font-weight: 600 !important;
+    color: #f1ede1 !important;
+    border-bottom: 1px solid rgba(241, 237, 225, 0.18) !important;
+    padding-bottom: 8px !important;
+    margin: 26px 0 12px !important;
+}
+
+.section-instr {
+    background-color: rgba(241, 237, 225, 0.07) !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    margin-bottom: 22px !important;
+    color: #c3cec6 !important;
+    font-size: 1.02rem !important;
+    line-height: 1.9 !important;
+}
+
+.section-note {
+    background-color: rgba(201, 168, 106, 0.12) !important;
+    border-left: 4px solid #c9a86a !important;
+    border-radius: 10px !important;
+    padding: 14px 18px !important;
+    margin: 22px 0 8px !important;
+    color: #e6dcc4 !important;
+    font-size: .98rem !important;
+    line-height: 1.85 !important;
+}
+
+@media (max-width: 640px) {
+    .module-card, .section-instr, .section-note {
+        padding: 14px 16px !important;
+    }
+    .section-title {
+        font-size: 1.2rem !important;
+    }
+}

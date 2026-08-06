@@ -101,18 +101,29 @@ except ModuleNotFoundError:
 if len(st.session_state["answers"]) != len(current_scale_data["questions"]):
     st.session_state["answers"] = [None] * len(current_scale_data["questions"])
 
-# 动态设定分页大小
-if selected_scale == "SCL-90":
-    QUESTIONS_PER_PAGE = 10
-elif selected_scale in ["SDS", "SAS"]:
-    QUESTIONS_PER_PAGE = 5
-elif selected_scale == "PSS":
-    QUESTIONS_PER_PAGE = 5
-else:
-    QUESTIONS_PER_PAGE = 3
-
 total_questions = len(current_scale_data["questions"])
-total_pages = math.ceil(total_questions / QUESTIONS_PER_PAGE)
+
+# 分页结构：普通量表按固定题数分页；多模块问卷（含 sections 定义）按部分分页，
+# 每个部分开头展示独立指导语与情景，大模块每 10 题一页
+PAGES = None
+SECTION_INFO = None
+if "sections" in current_scale_data:
+    SECTION_INFO = current_scale_data["sections"]
+    PAGES = []
+    for sec_idx, sec in enumerate(SECTION_INFO):
+        sec_len = sec["end"] - sec["start"]
+        chunk = 10 if sec_len > 10 else sec_len
+        for c_start in range(0, sec_len, chunk):
+            PAGES.append((sec_idx, c_start, min(c_start + chunk, sec_len)))
+    total_pages = len(PAGES)
+else:
+    if selected_scale == "SCL-90":
+        QUESTIONS_PER_PAGE = 10
+    elif selected_scale in ["SDS", "SAS"]:
+        QUESTIONS_PER_PAGE = 5
+    else:
+        QUESTIONS_PER_PAGE = 3
+    total_pages = math.ceil(total_questions / QUESTIONS_PER_PAGE)
 
 def validate_current_page(start_idx, end_idx):
     if current_scale_data.get("allow_skip"):
@@ -140,6 +151,9 @@ if not st.session_state["submitted"]:
             <p style="margin-bottom: 0;"><strong>测试目的：</strong> {current_scale_data['description']}</p>
         </div>
         """, unsafe_allow_html=True)
+
+    if "module_note" in current_scale_data:
+        st.markdown(f"<div class='module-card'>{clean_html(current_scale_data['module_note'])}</div>", unsafe_allow_html=True)
     
     st.session_state["user_id"] = st.text_input(
         "请输入您的被试编号或昵称（如 P01，以便记录）：", 
@@ -147,15 +161,31 @@ if not st.session_state["submitted"]:
     )
     
     progress_val = (st.session_state["current_page"] + 1) / total_pages
-    st.progress(progress_val, text=f"第 {st.session_state['current_page'] + 1} 部分 / 共 {total_pages} 部分")
+    if PAGES:
+        cur_sec_idx = PAGES[st.session_state["current_page"]][0]
+        cur_c_start = PAGES[st.session_state["current_page"]][1]
+        progress_text = SECTION_INFO[cur_sec_idx]["title"] if cur_c_start == 0 else f"{SECTION_INFO[cur_sec_idx]['title']}（续）"
+    else:
+        progress_text = f"第 {st.session_state['current_page'] + 1} 部分 / 共 {total_pages} 部分"
+    st.progress(progress_val, text=progress_text)
     st.markdown("<hr class='clinical-divider'>", unsafe_allow_html=True)
     
     if st.session_state["error_msg"]:
         st.error(st.session_state["error_msg"])
 
-    start_idx = st.session_state["current_page"] * QUESTIONS_PER_PAGE
-    end_idx = min(start_idx + QUESTIONS_PER_PAGE, total_questions)
+    if PAGES:
+        sec_idx, c_start, c_end = PAGES[st.session_state["current_page"]]
+        sec_now = SECTION_INFO[sec_idx]
+        start_idx = sec_now["start"] + c_start
+        end_idx = sec_now["start"] + c_end
+    else:
+        start_idx = st.session_state["current_page"] * QUESTIONS_PER_PAGE
+        end_idx = min(start_idx + QUESTIONS_PER_PAGE, total_questions)
     current_questions = current_scale_data["questions"][start_idx:end_idx]
+
+    if PAGES and c_start == 0:
+        st.markdown(f"<h2 class='section-title'>{sec_now['title']}</h2>", unsafe_allow_html=True)
+        st.markdown(f"<div class='section-instr'>{clean_html(sec_now['instruction'])}</div>", unsafe_allow_html=True)
 
     for i, q in enumerate(current_questions):
         actual_q_index = start_idx + i 
@@ -194,6 +224,9 @@ if not st.session_state["submitted"]:
                 if opt["label"] == choice:
                     st.session_state["answers"][actual_q_index] = opt["score"]
                     break
+
+    if PAGES and sec_now.get("after") and c_end == sec_now["end"] - sec_now["start"]:
+        st.markdown(f"<div class='section-note'>{clean_html(sec_now['after'])}</div>", unsafe_allow_html=True)
 
     st.write("")
     cols = st.columns(3)
