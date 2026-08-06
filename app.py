@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import json
 import math
 import importlib
@@ -14,6 +15,12 @@ def local_css(file_name):
     with open(file_name, "r", encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 local_css("assets/custom.css")
+
+# 每次翻页后自动回到页面顶部
+components.html(
+    "<script>window.parent.scrollTo({top: 0, behavior: 'instant'});</script>",
+    height=0
+)
 
 # 核心清洗工具
 def clean_html(html_str: str) -> str:
@@ -179,7 +186,7 @@ if not st.session_state["submitted"]:
             options=q_labels,
             index=default_index,
             key=f"radio_{actual_q_index}",
-            horizontal=True
+            horizontal=len(q_options) <= 8
         )
         
         if choice is not None:

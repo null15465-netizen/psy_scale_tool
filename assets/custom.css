@@ -246,3 +246,42 @@ div[role="radiogroup"] > *:nth-child(5) label::after, div[role="radiogroup"] > l
     div[role="radiogroup"] > *:nth-child(4) label::after { width: 44px !important; height: 44px !important; }
     div[role="radiogroup"] > *:nth-child(5) label::after { width: 56px !important; height: 56px !important; }
 }
+
+/* =========================================
+   6. 长选项题（8 个及以上选项，如"职务"）
+   等大圆圈 + 纵向排列，避免地位暗示
+========================================= */
+div[role="radiogroup"]:has(> *:nth-child(8)) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 4px !important;
+    padding-bottom: 6px !important;
+}
+div[role="radiogroup"]:has(> *:nth-child(8)) > * {
+    flex: none !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+}
+div[role="radiogroup"]:has(> *:nth-child(8)) label {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    height: auto !important;
+    min-height: 46px !important;
+    padding: 10px 14px !important;
+    gap: 14px !important;
+}
+div[role="radiogroup"]:has(> *:nth-child(8)) label > div:last-child {
+    margin-bottom: 0 !important;
+    text-align: left !important;
+}
+div[role="radiogroup"]:has(> *:nth-child(8)) label::after {
+    width: 28px !important;
+    height: 28px !important;
+    border-width: 2px !important;
+}
+div[role="radiogroup"]:has(> *:nth-child(8)) > *:nth-child(n) label::after,
+div[role="radiogroup"]:has(> *:nth-child(8)) > label:nth-child(n)::after {
+    width: 28px !important;
+    height: 28px !important;
+}
