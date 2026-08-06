@@ -27,6 +27,7 @@ def save_record(answers: List[int], total_score: int, severity: str, user_id: st
     
     # 动态路由表名（增加 SDS 和 SAS）
     table_map = {
+        "PSS": "pss_records",
         "PHQ-9": "phq9_records",
         "GAD-7": "gad7_records",
         "SCL-90": "scl90_records",

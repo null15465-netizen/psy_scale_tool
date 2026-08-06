@@ -99,6 +99,8 @@ if selected_scale == "SCL-90":
     QUESTIONS_PER_PAGE = 10
 elif selected_scale in ["SDS", "SAS"]:
     QUESTIONS_PER_PAGE = 5
+elif selected_scale == "PSS":
+    QUESTIONS_PER_PAGE = 5
 else:
     QUESTIONS_PER_PAGE = 3
 
@@ -106,6 +108,8 @@ total_questions = len(current_scale_data["questions"])
 total_pages = math.ceil(total_questions / QUESTIONS_PER_PAGE)
 
 def validate_current_page(start_idx, end_idx):
+    if current_scale_data.get("allow_skip"):
+        return True, -1
     for i in range(start_idx, end_idx):
         if st.session_state["answers"][i] is None:
             return False, i + 1
@@ -118,14 +122,17 @@ if not st.session_state["submitted"]:
     
     st.markdown(f"<h1 class='main-title'>{current_scale_data['name']}</h1>", unsafe_allow_html=True)
     
-    st.markdown(f"""
-    <div class="instruction-card">
-        <p><strong>免费声明：</strong> 本测试免费，无需支付费用。</p>
-        <p><strong>数据用途：</strong> 数据仅用于心理学科研统计分析，测试结果严格保密。</p>
-        <p><strong>测试说明：</strong> 本量表共 {total_questions} 道题，预计耗时 {"10-15" if selected_scale == "SCL-90" else "2-3"} 分钟。</p>
-        <p style="margin-bottom: 0;"><strong>测试目的：</strong> {current_scale_data['description']}</p>
-    </div>
-    """, unsafe_allow_html=True)
+    if "instruction" in current_scale_data:
+        st.markdown(f"<div class='instruction-card'>{clean_html(current_scale_data['instruction'])}</div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+        <div class="instruction-card">
+            <p><strong>免费声明：</strong> 本测试免费，无需支付费用。</p>
+            <p><strong>数据用途：</strong> 数据仅用于心理学科研统计分析，测试结果严格保密。</p>
+            <p><strong>测试说明：</strong> 本量表共 {total_questions} 道题，预计耗时 {current_scale_data.get("duration", "10-15" if selected_scale == "SCL-90" else "2-3")} 分钟。</p>
+            <p style="margin-bottom: 0;"><strong>测试目的：</strong> {current_scale_data['description']}</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     st.session_state["user_id"] = st.text_input(
         "请输入您的被试编号或昵称（如 P01，以便记录）：", 
@@ -142,29 +149,41 @@ if not st.session_state["submitted"]:
     start_idx = st.session_state["current_page"] * QUESTIONS_PER_PAGE
     end_idx = min(start_idx + QUESTIONS_PER_PAGE, total_questions)
     current_questions = current_scale_data["questions"][start_idx:end_idx]
-    options_labels = [opt["label"] for opt in current_scale_data["options"]]
 
     for i, q in enumerate(current_questions):
         actual_q_index = start_idx + i 
         
+        q_options = q.get("options") or current_scale_data["options"]
+        q_labels = [opt["label"] for opt in q_options]
+
+        if q.get("free_text"):
+            current_text = st.session_state["answers"][actual_q_index] or ""
+            txt = st.text_input(
+                label=f"{actual_q_index + 1}. {q['text']}",
+                value=current_text,
+                key=f"text_{actual_q_index}"
+            )
+            st.session_state["answers"][actual_q_index] = txt.strip()
+            continue
+
         current_ans_val = st.session_state["answers"][actual_q_index]
         default_index = None
         if current_ans_val is not None:
-            for opt_idx, opt in enumerate(current_scale_data["options"]):
+            for opt_idx, opt in enumerate(q_options):
                 if opt["score"] == current_ans_val:
                     default_index = opt_idx
                     break
         
         choice = st.radio(
             label=f"{actual_q_index + 1}. {q['text']}",
-            options=options_labels,
+            options=q_labels,
             index=default_index,
             key=f"radio_{actual_q_index}",
             horizontal=True
         )
         
         if choice is not None:
-            for opt in current_scale_data["options"]:
+            for opt in q_options:
                 if opt["label"] == choice:
                     st.session_state["answers"][actual_q_index] = opt["score"]
                     break
